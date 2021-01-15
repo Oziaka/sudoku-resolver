@@ -2,10 +2,13 @@ package pl.model;
 
 import pl.exception.ValidationBoardException;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public class SudokuBoard implements Cloneable {
-   private final int numberOfColumns = 9;
-   private final int numberOfRows = 9;
-   private int boardTab[][];
+   protected final int numberOfColumns = 9;
+   protected final int numberOfRows = 9;
+   protected int boardTab[][];
 
    public SudokuBoard(int[][] boardTab) {
       validBoard(boardTab);
@@ -34,11 +37,11 @@ public class SudokuBoard implements Cloneable {
       for (int y = 0; y < numberOfColumns; y++) {
          newBoardTab[y] = boardTab[y].clone();
       }
-      return new SudokuBoard(newBoardTab);
+      return newBoardTab;
    }
 
    public SudokuBoard cloneBoard() {
-      return (SudokuBoard) this.clone();
+      return new SudokuBoard((int[][]) clone());
    }
 
    public String toString() {
@@ -60,11 +63,27 @@ public class SudokuBoard implements Cloneable {
       return boardTab[y.getCoord()];
    }
 
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      SudokuBoard that = (SudokuBoard) o;
+      return numberOfColumns == that.numberOfColumns &&
+         numberOfRows == that.numberOfRows &&
+         Arrays.equals(boardTab, that.boardTab);
+   }
+
+   @Override
+   public int hashCode() {
+      int result = Objects.hash(numberOfColumns, numberOfRows);
+      result = 31 * result + Arrays.hashCode(boardTab);
+      return result;
+   }
+
    public int[] getColumn(SudokuCoord x) {
       int column[] = new int[9];
-      for (int y = 0; y < 9; y++) {
+      for (int y = 0; y < 9; y++)
          column[y] = boardTab[y][x.getCoord()];
-      }
       return column;
    }
 
